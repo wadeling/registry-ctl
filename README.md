@@ -1,4 +1,6 @@
 # registry-ctl
 registry controller. 
 
-- support registry garbage collection trigger by a http api
+## comment
+this is a wrapper of registry which will start docker registry and a http server.
+you can send a gc command to this http server,make registry to do garbage-collection-command.
