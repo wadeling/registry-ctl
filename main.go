@@ -3,11 +3,11 @@ package main
 import (
 	"crypto/tls"
 	"flag"
+	"github.com/sirupsen/logrus"
 	"github.com/wadeling/registry-ctl/config"
 	"github.com/wadeling/registry-ctl/handlers"
 	"github.com/wadeling/registry-ctl/registry"
 	"github.com/wadeling/registry-ctl/util"
-	"log"
 	"net/http"
 )
 
@@ -19,6 +19,7 @@ type RegistryCtl struct {
 
 // Start the registry controller
 func (s *RegistryCtl) Start() {
+	logrus.Info("registry ctl start...")
 	regCtl := &http.Server{
 		Addr:      ":" + s.ServerConf.Port,
 		Handler:   s.Handler,
@@ -37,10 +38,18 @@ func (s *RegistryCtl) Start() {
 	}
 
 	if err != nil {
-		log.Fatal(err)
+		logrus.Fatal(err)
 	}
 
 	return
+}
+
+func initLog() {
+	lvl, err := logrus.ParseLevel(config.GetLogLevel())
+	if err != nil {
+		lvl = logrus.InfoLevel
+	}
+	logrus.SetLevel(lvl)
 }
 
 func main() {
@@ -49,18 +58,22 @@ func main() {
 
 	if configPath == nil || len(*configPath) == 0 {
 		flag.Usage()
-		log.Fatal("Config file should be specified")
+		logrus.Fatal("Config file should be specified")
 	}
 	if err := config.DefaultConfig.Load(*configPath, true); err != nil {
-		log.Fatalf("Failed to load configurations with error: %s\n", err)
+		logrus.Fatalf("Failed to load configurations with error: %s\n", err)
 	}
 
+	// init log level
+	initLog()
+
 	// start registry
-	err := registry.StartRegistry()
-	if err != nil {
-		log.Fatalf("failed to start registry:%v\n", err)
-		return
-	}
+	go func() {
+		err := registry.StartRegistry(config.DefaultConfig.RegistryConfig)
+		if err != nil {
+			logrus.Fatalf("failed to start registry:%v\n", err)
+		}
+	}()
 
 	// start http server
 	regCtl := &RegistryCtl{

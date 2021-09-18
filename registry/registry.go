@@ -6,8 +6,9 @@ import (
 	"os/exec"
 )
 
-func StartRegistry() error {
-	cmd := exec.Command("sh", "-c", "/bin/registry  serve /etc/docker/registry/config.yml ")
+func StartRegistry(registryConf string) error {
+	//cmd := exec.Command("sh", "-c", "/bin/registry  serve  "+registryConf)
+	cmd := exec.Command("/bin/registry", "serve", registryConf)
 	var outBuf, errBuf bytes.Buffer
 	cmd.Stdout = &outBuf
 	cmd.Stderr = &errBuf

@@ -5,6 +5,7 @@ import (
 	"github.com/docker/distribution/configuration"
 	storagedriver "github.com/docker/distribution/registry/storage/driver"
 	"github.com/docker/distribution/registry/storage/driver/factory"
+	_ "github.com/docker/distribution/registry/storage/driver/filesystem"
 	log "github.com/sirupsen/logrus"
 	"io/ioutil"
 	"os"
@@ -75,16 +76,6 @@ func (c *Configuration) setStorageDriver() error {
 // GetLogLevel returns the log level
 func GetLogLevel() string {
 	return DefaultConfig.LogLevel
-}
-
-// GetJobAuthSecret get the auth secret from the env
-func GetJobAuthSecret() string {
-	return os.Getenv("JOBSERVICE_SECRET")
-}
-
-// GetUIAuthSecret get the auth secret of UI side
-func GetUIAuthSecret() string {
-	return os.Getenv("CORE_SECRET")
 }
 
 // loadEnvs Load env variables
