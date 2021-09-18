@@ -1,0 +1,14 @@
+#!/bin/bash
+
+#digest=sha256:9dc6c65944f0970ffd6ffc3c80e4c4d5e01e683e8acf75a2b4ee0350fb62fc76
+digest=`cat image_digest| tr -d '\r'`
+echo ${#digest}
+requrl="http://localhost:5000/v2/library/nginx/manifests/$digest"
+echo $requrl
+curl -v -u testuser:testpassword -X GET $requrl
+
+#while read digest
+#do
+#	requrl="http://localhost:5000/v2/library/nginx/manifests/$digest"
+#	curl -v -u testuser:testpassword -X GET $requrl
+#done < image_digest

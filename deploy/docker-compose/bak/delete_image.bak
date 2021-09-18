@@ -1,0 +1,31 @@
+#!/bin/bash
+
+username=testuser
+password=testpassword
+url="http://localhost:5000"
+repo="library/nginx"
+tag="1.20"
+
+manifest_file=tmp_image_manifest
+layers_file=tmp_image_layers
+
+# get manifest
+echo "get manifest"
+curl -u$username:$password -H "Accept: application/vnd.docker.distribution.manifest.v2+json" "${url}/v2/${repo}/manifests/${tag}" > $manifest_file
+
+# get every layer
+echo "get layers"
+cat $manifest_file | jq ".layers|.[].digest" | awk -F '"' '{print $2}' > $layers_file
+
+# loop layers
+while read line
+do
+	echo "delete layer:$line"
+	# delete layer
+	curl -v -X DELETE -u$username:$password "$url/v2/$repo/blobs/$line"
+done < $layers_file
+
+rm $manifest_file
+rm $layers_file
+
+echo "end"

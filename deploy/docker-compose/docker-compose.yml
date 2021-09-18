@@ -1,0 +1,15 @@
+registry:
+  restart: always
+  image: wade23/registry-ctl:latest
+  ports:
+    - 5000:5000
+    - 8081:8081
+  environment:
+    REGISTRY_AUTH: htpasswd
+    REGISTRY_AUTH_HTPASSWD_PATH: /auth/htpasswd
+    REGISTRY_AUTH_HTPASSWD_REALM: Registry Realm
+  volumes:
+    - ./data:/var/lib/registry
+    - ./auth:/auth
+    - ./conf/registryctl:/etc/registry-ctl
+    - ./conf/registry:/etc/docker/registry

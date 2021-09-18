@@ -1,0 +1,5 @@
+---
+protocol: "http"
+port: 8081
+log_level: debug
+registry_config: "/etc/docker/registry/config.yml"
